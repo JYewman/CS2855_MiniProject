@@ -57,7 +57,6 @@ class DB {
 
     public void addMultiRow(String tableName, String[] colNames, String rowData){
         try{
-            StringBuilder data = new StringBuilder();
             StringBuilder col = new StringBuilder();
             for (int i = 0; i < colNames.length; i++){
                 if (i != 0){
@@ -70,19 +69,6 @@ class DB {
         } catch(Exception e){
             e.printStackTrace();
         }
-    }
-}
-class airportObject{
-    String airportCode;
-    String airportName;
-    String city;
-    String state;
-
-    public airportObject(String airportCode, String airportName, String city, String state){
-        this.airportCode = airportCode;
-        this.airportName = airportName;
-        this.city = city;
-        this.state = state;
     }
 }
 
