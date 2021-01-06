@@ -55,31 +55,6 @@ class DB {
         }
     }
 
-    public void addRow(String tableName, String[] colNames, String[] rowData){
-        try{
-            StringBuilder airportData = new StringBuilder();
-            StringBuilder colName = new StringBuilder();
-            for (int i = 0; i < rowData.length; i++){
-                if(i != 0) {
-                    airportData.append("', '");
-                }
-                airportData.append(rowData[i]);
-            }
-            for (int i = 0; i < colNames.length; i++) {
-                if (i != 0) {
-                    colName.append(", ");
-                }
-                colName.append(colNames[i]);
-            }
-            //System.out.println("INSERT INTO " + tableName + "(" + colName + ") VALUES ('" + airportData + "');");
-            Statement statement = con.createStatement();
-            statement.execute("INSERT INTO " + tableName + "(" + colName + ") VALUES ('" + airportData + "');");
-            statement.close();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public void addMultiRow(String tableName, String[] colNames, String rowData){
         try{
             StringBuilder data = new StringBuilder();
@@ -111,15 +86,6 @@ class airportObject{
     }
 }
 
-class progress{
-    static void newProgress(double progressComplete){
-        System.out.print("\r[");
-        for (int i = 0; i <= (int)(progressComplete); i++){
-            System.out.print("=");
-        }
-        System.out.print("]");
-    }
-}
 class dbMiniProj {
 
     public static void main(String[] args){
@@ -146,6 +112,7 @@ class dbMiniProj {
             }
         }
         if (!database.isConnected()) {
+            System.out.println("Connection Error! Check Address.");
             usrInput.close();
         }
         if (database.isConnected()) {
@@ -191,7 +158,6 @@ class dbMiniProj {
 
         db.add("airports", airportCol);
         db.add("delayedFlights", delFlightCol);
-        System.out.println("OK!");
     }
 
     public static void inject(DB db){
@@ -230,18 +196,24 @@ class dbMiniProj {
             DataInputStream dIn = new DataInputStream(fileStream);
             BufferedReader br = new BufferedReader(new InputStreamReader(dIn));
             String fLine;
-            double progressComplete = 0.0;
+            StringBuilder s = new StringBuilder();
             while ((fLine = br.readLine()) != null){
                 String[] elements = fLine.split(",");
-                db.addRow("airports", airportcol, elements);
-                progressComplete += 0.05;
-                progress.newProgress(progressComplete);
+                s.append("('");
+                for (int i = 0; i <= elements.length - 1; i++){
+                    if (i != 0){
+                        s.append("', '");
+                    }
+                    s.append(elements[i]);
+                }
+                s.append("'), ");
             }
+            String query = s.substring(0, s.length() - 2);
+            db.addMultiRow("airports", airportcol, query);
         } catch (IOException e){
             e.printStackTrace();
         }
 
-        System.out.println();
         System.out.println("Please Wait, Populating Flight Data...");
         try{
             FileInputStream fileStream = new FileInputStream(delayedFlightsPath);
@@ -261,7 +233,6 @@ class dbMiniProj {
                 s.append("'), ");
             }
             String query = s.substring(0, s.length() - 2);
-            //System.out.println(query);
             db.addMultiRow("delayedFlights", flightcol, query);
         } catch (IOException e){
             e.printStackTrace();
