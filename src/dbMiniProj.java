@@ -33,6 +33,47 @@ class DB {
         }
     }
 
+    public String[][] getResult(String sql) {
+        try {
+            Statement st = con.createStatement(
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY
+            );
+            if (st.execute(sql)) {
+                return parseResultSet(st.getResultSet());
+            } else {
+                return null;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            System.exit(0);
+        }
+        return null;
+    }
+
+    private String[][] parseResultSet(ResultSet resultSet) {
+        try {
+            int rows = 0;
+            int columns = resultSet.getMetaData().getColumnCount();
+            if (resultSet.last()) {
+                rows = resultSet.getRow();
+                resultSet.beforeFirst();
+            }
+            String[][] contents = new String[rows][columns];
+            for (int j = 1; resultSet.next() && j <= rows; j++) {
+                for (int i = 1; i <= columns; i++) {
+                    contents[j - 1][i - 1] = resultSet.getString(i);
+                }
+            }
+            resultSet.close();
+            return contents;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+
+    }
+
     public void add(String tbName, String[][] colName) {
         try {
             StringBuilder s = new StringBuilder();
@@ -73,7 +114,7 @@ class DB {
 }
 
 class dbMiniProj {
-
+    public static int queryNum = 1;
     public static void main(String[] args){
         DB database;
         Scanner usrInput = new Scanner(System.in);
@@ -105,8 +146,8 @@ class dbMiniProj {
             System.out.println("Connected to " + dbAddressInput);
             init(database);
             inject(database);
+            query(database);
         }
-
     }
 
     public static void init(DB db) {
@@ -224,4 +265,32 @@ class dbMiniProj {
             e.printStackTrace();
         }
     }
+
+    public static void output(String[][] data){
+        System.out.print("################## " + queryNum);
+        if (queryNum == 1){
+            System.out.print("st");
+        } else if (queryNum == 2){
+            System.out.print("nd");
+        } else if (queryNum == 3){
+            System.out.print("rd");
+        } else {
+            System.out.print("th");
+        }
+        System.out.println(" Query ################");
+        queryNum++;
+        for (int i = 0; i < (data.length); i++){
+            for (int j = 0; j < (data[i].length); j++){
+                System.out.print(data[i][j]);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void query(DB db){
+        String[][] queryDB = db.getResult("SELECT UniqueCarrier, count(*) from delayedFlights GROUP BY UniqueCarrier ORDER BY count(*) DESC LIMIT 5;");
+        output(queryDB);
+    }
+
 }
