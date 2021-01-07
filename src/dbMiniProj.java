@@ -279,9 +279,9 @@ class dbMiniProj {
         }
         System.out.println(" Query ################");
         queryNum++;
-        for (int i = 0; i < (data.length); i++){
-            for (int j = 0; j < (data[i].length); j++){
-                System.out.print(data[i][j]);
+        for (String[] datum : data) {
+            for (String s : datum) {
+                System.out.print(s);
                 System.out.print(" ");
             }
             System.out.println();
