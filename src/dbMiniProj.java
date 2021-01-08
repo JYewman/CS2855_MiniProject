@@ -1,3 +1,5 @@
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.sql.*;
 import java.util.Scanner;
@@ -288,12 +290,15 @@ class dbMiniProj {
         }
     }
 
-    public static void query(DB db){
+    public static void query(@NotNull DB db){
         String[][] queryDB = db.getResult("SELECT UniqueCarrier, count(*) from delayedFlights " +
                 "GROUP BY UniqueCarrier ORDER BY count(*) DESC LIMIT 5;");
         output(queryDB);
         queryDB = db.getResult("SELECT a.City, count(d.Orig) from airports a INNER JOIN delayedFlights d ON " +
                 "a.airportcode = d.Orig GROUP BY a.City ORDER BY count(d.Orig) DESC LIMIT 5;");
+        output(queryDB);
+        queryDB = db.getResult("SELECT Dest, SUM(ArrDelay) FROM delayedFlights GROUP BY dest " +
+                "ORDER BY SUM(ArrDelay) DESC LIMIT 5 OFFSET 1;");
         output(queryDB);
     }
 
