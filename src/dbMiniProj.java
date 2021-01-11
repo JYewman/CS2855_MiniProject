@@ -120,22 +120,15 @@ class dbMiniProj {
 
         System.out.println("Enter Database URL (eg. teaching.cs.rhul.ac.uk/CS2855/<username>):");
         String dbAddressInput = usrInput.nextLine();
-        if (dbAddressInput.equals("localhost")) {
-            database = new DB("jdbc:postgresql://localhost/CS2855/zhac083");
-            database.auth("zhac083",
-                    "seeboh");
-        }
-        else {
-            String dbAddr = ("jdbc:postgresql://" + dbAddressInput);
-            System.out.println("Enter Username:");
-            String user = usrInput.nextLine();
-            System.out.println("Enter Password:");
-            String password = usrInput.nextLine();
+        String dbAddr = ("jdbc:postgresql://" + dbAddressInput);
+        System.out.println("Enter Username:");
+        String user = usrInput.nextLine();
+        System.out.println("Enter Password:");
+        String password = usrInput.nextLine();
 
-            database = new DB(dbAddr);
-            if(!database.auth(user, password)) {
-                System.out.println("Error! Check connection details.");
-            }
+        database = new DB(dbAddr);
+        if(!database.auth(user, password)) {
+            System.out.println("Error! Check connection details.");
         }
         if (!database.isConnected()) {
             System.out.println("Connection Error! Check Address.");
