@@ -1,5 +1,3 @@
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.sql.*;
 import java.util.Scanner;
@@ -89,7 +87,6 @@ class DB {
                 s.append(",");
             }
             s = new StringBuilder(s.substring(0, s.length() - 1));
-            //System.out.println("CREATE TABLE " + tbName +" (" + s + ")");
             Statement statement = con.createStatement();
             statement.execute("CREATE TABLE " + tbName +" (" + s + ")");
             statement.close();
@@ -290,7 +287,7 @@ class dbMiniProj {
         }
     }
 
-    public static void query(@NotNull DB db){
+    public static void query(DB db){
         String[][] queryDB = db.getResult("SELECT UniqueCarrier, count(*) from delayedFlights " +
                 "GROUP BY UniqueCarrier ORDER BY count(*) DESC LIMIT 5;");
         output(queryDB);
